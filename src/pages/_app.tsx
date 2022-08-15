@@ -5,6 +5,7 @@ import type { AppType } from "next/dist/shared/lib/utils";
 import superjson from "superjson";
 import { SessionProvider } from "next-auth/react";
 import "../styles/globals.css";
+import { loggerLink } from "@trpc/client/links/loggerLink";
 
 const MyApp: AppType = ({
   Component,
@@ -37,6 +38,14 @@ export default withTRPC<AppRouter>({
     return {
       url,
       transformer: superjson,
+      links: [
+        // adds pretty logs to your console in development and logs errors in production
+        loggerLink({
+          enabled: (opts) =>
+            !!process.env.NEXT_PUBLIC_DEBUG ||
+            (opts.direction === "down" && opts.result instanceof Error),
+        }),
+      ],
       /**
        * @link https://react-query.tanstack.com/reference/QueryClient
        */
