@@ -4,32 +4,27 @@ import { useState, forwardRef, useCallback, ReactNode } from "react";
 import { FaRegEnvelope } from "react-icons/fa";
 import { MdLockOutline } from "react-icons/md";
 import Link from "next/link";
+import { loginValidator, loginInputType } from "../utils/login-validator";
 // import { AuthServices } from "../services/AuthServices";
 import { useRouter } from "next/router";
 import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 
-// import { mutate } from "swr";
 // import { autoLogin } from "../utils/auth";
-
-interface LoginValues {
-  email: string;
-  password: string;
-}
 
 export default function Signin() {
   const router = useRouter();
-  const form = useForm<LoginValues>();
+  const form = useForm<loginInputType>({
+    resolver: zodResolver(loginValidator),
+  });
   const { formState, handleSubmit } = form;
   const { isSubmitting } = formState;
-  const login = async () => {
-    // const { token } = await AuthServices.login(email, password);
-    // autoLogin(token);
-    // mutate("/api/me");
-  };
 
-  const onSubmit = async (data) => {
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  const onSubmit = async (data: loginInputType) => {
     const fields = { fields: data };
-    console.log("fields", fields);
+    console.log("fields", data);
   };
 
   return (
@@ -60,13 +55,18 @@ export default function Signin() {
                     autoComplete="email"
                     autoCorrect="off"
                     inputMode="email"
+                    required
                     type="email"
                     placeholder="Email"
                     className="bg-gray-100 outline-none text-sm flex-1"
-                    required
                     {...form.register("email")}
                   />
                 </div>
+                {formState.errors.email && (
+                  <p className="mt-1 text-sm text-red-500">
+                    {formState.errors.email.message}
+                  </p>
+                )}
                 <div className="bg-gray-100  w-96 p-2 flex items-center mt-3">
                   <MdLockOutline className="text-gray-400 m-2" />
                   <input
@@ -78,6 +78,11 @@ export default function Signin() {
                     {...form.register("password")}
                   />
                 </div>
+                {formState.errors.password && (
+                  <p className="mt-1 text-sm text-red-500">
+                    {formState.errors.password.message}
+                  </p>
+                )}
                 <div className="flex w-96 mb-5 mt-4 justify-between">
                   <label className="flex items-center text-xs">
                     <input type="checkbox" name="remember" className="mr-1" />

@@ -6,28 +6,23 @@ import { MdLockOutline } from "react-icons/md";
 import { AiOutlineUser } from "react-icons/ai";
 import { useRouter } from "next/router";
 import { useForm } from "react-hook-form";
+import { signUpValidator, signUpInputType } from "../utils/signup-validator";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 // import { mutate } from "swr";
 // import { autoLogin } from "../utils/auth";
 
-interface LoginValues {
-  name: string;
-  email: string;
-  password: string;
-}
-
 export default function Signin() {
   const router = useRouter();
-  const form = useForm<LoginValues>();
+  const form = useForm<signUpInputType>({
+    resolver: zodResolver(signUpValidator),
+  });
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
   const { formState, handleSubmit } = form;
   const { isSubmitting } = formState;
-  const login = async () => {
-    // const { token } = await AuthServices.login(email, password);
-    // autoLogin(token);
-    // mutate("/api/me");
-  };
 
-  const onSubmit = async (data) => {
+  const onSubmit = async (data: signUpInputType) => {
     const fields = { fields: data };
     console.log("fields", fields);
   };
@@ -62,6 +57,11 @@ export default function Signin() {
                     {...form.register("name")}
                   />
                 </div>
+                {formState.errors.name && (
+                  <p className="mt-1 text-sm text-red-500">
+                    {formState.errors.name.message}
+                  </p>
+                )}
                 <div className="bg-gray-100 w-96 p-2 flex items-center mt-3">
                   <FaRegEnvelope className="text-gray-400 m-2" />
                   <input
@@ -77,6 +77,11 @@ export default function Signin() {
                     {...form.register("email")}
                   />
                 </div>
+                {formState.errors.email && (
+                  <p className="mt-1 text-sm text-red-500">
+                    {formState.errors.email.message}
+                  </p>
+                )}
                 <div className="bg-gray-100  w-96 p-2 flex items-center mt-3">
                   <MdLockOutline className="text-gray-400 m-2" />
                   <input
