@@ -11,6 +11,13 @@ import Credentials from "next-auth/providers/credentials";
 import { verify } from "argon2";
 // import { prisma } from "./prisma";
 
+const notFound = {
+  id: 2,
+  email: null,
+  name: null,
+  role: null,
+};
+
 export const nextAuthOptions: NextAuthOptions = {
   providers: [
     Credentials({
@@ -23,6 +30,10 @@ export const nextAuthOptions: NextAuthOptions = {
         password: { label: "Password", type: "password" },
       },
       authorize: async (credentials, request) => {
+        if (!credentials) {
+          console.error(`For some reason credentials are missing`);
+          throw new Error("Credential missing");
+        }
         const creds = await loginValidator.parseAsync(credentials);
 
         const user = await prisma.user.findFirst({
@@ -43,6 +54,7 @@ export const nextAuthOptions: NextAuthOptions = {
           id: user.id,
           email: user.email,
           name: user.name,
+          role: user.role,
         };
       },
     }),
@@ -52,6 +64,7 @@ export const nextAuthOptions: NextAuthOptions = {
       if (user) {
         token.id = user.id;
         token.email = user.email;
+        token.role = user.role;
       }
 
       return token;
@@ -59,6 +72,7 @@ export const nextAuthOptions: NextAuthOptions = {
     session: async ({ session, token }) => {
       if (token) {
         session.id = token.id;
+        session.role = token.role;
       }
 
       return session;
@@ -70,7 +84,7 @@ export const nextAuthOptions: NextAuthOptions = {
   },
   pages: {
     signIn: "/login",
-    newUser: "/sign-up",
+    newUser: "/signup",
   },
 };
 

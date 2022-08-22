@@ -18,6 +18,12 @@ model Example {
     id String @id @default(cuid())
 }
 
+enum UserPermissionRole {
+    USER
+    ADMIN
+    SELLER
+}
+
 // Necessary for Next auth
 model Account {
     id                String  @id @default(cuid())
@@ -46,51 +52,24 @@ model Session {
 }
 
 model User {
-    id            String    @id @default(cuid())
+    id            String             @id @default(cuid())
     name          String
-    email         String    @unique
+    email         String             @unique
     image         String?
     password      String
     phone         String?
     birthDate     DateTime?
-    aboutMe       String?   @db.Text
-    createdAt     DateTime? @default(now())
-    updatedAt     DateTime? @updatedAt
-    roleId        Int?
-    role          Role?     @relation(fields: [roleId], references: [id])
+    aboutMe       String?            @db.Text
+    createdAt     DateTime?          @default(now())
+    updatedAt     DateTime?          @updatedAt
+    role          UserPermissionRole @default(USER)
     cart          Cart[]
     emailVerified DateTime?
 
-    accounts     Account[]
-    sessions     Session[]
-    Permission   Permission? @relation(fields: [permissionId], references: [id])
-    permissionId Int?
+    accounts Account[]
+    sessions Session[]
 
     @@map("user")
-}
-
-model Role {
-    id          Int          @id @default(autoincrement())
-    name        String       @unique
-    displayName String?
-    createdAt   DateTime?    @default(now())
-    updatedAt   DateTime?    @updatedAt
-    users       User[]
-    permissions Permission[]
-
-    @@map("role")
-}
-
-model Permission {
-    id          Int       @id @default(autoincrement())
-    name        String
-    displayName String
-    createdAt   DateTime? @default(now())
-    updatedAt   DateTime? @updatedAt
-    roles       Role[]
-    users       User[]
-
-    @@map("permission")
 }
 
 model VerificationToken {

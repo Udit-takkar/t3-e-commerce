@@ -80,7 +80,7 @@ const Avatar: React.FC<AvatarProps> = ({
   }
   return (
     <div
-      className={`flex justify-center items-center font-bold object-cover  text-white ${sizeClass[size]} rounded-full ${className} ml-2`}
+      className={`flex justify-center items-center font-bold object-cover  text-white ${sizeClass[size]} rounded-full ${className} ml-4`}
       style={{ backgroundColor: color, ...custom }}
       onClick={onClick}
     >

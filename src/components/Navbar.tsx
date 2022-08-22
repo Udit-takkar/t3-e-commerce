@@ -10,6 +10,7 @@ import Avatar from "./Avatar";
 import { useRouter } from "next/router";
 import { AnimatePresence, motion } from "framer-motion";
 import { useSession } from "next-auth/react";
+import { signOut } from "next-auth/react";
 
 const unauthenticatedNav = [
   { name: "Log In", href: "/login" },
@@ -18,21 +19,22 @@ const unauthenticatedNav = [
 ];
 
 const authenticatedNav = [
-  { name: "Cart", href: "/cart", role: ["user"] },
+  { name: "Cart", href: "/cart", role: ["USER"] },
   { name: "Dashboard", href: "/dashboard/sellerDashboard", role: ["seller"] },
 ];
 
 export default function Header() {
   //   const { data: loggedInUser } = useUser();
   //   const logout = useLogout();
-  const loggedInUser = null;
+  // const loggedInUser = null;
   const router = useRouter();
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
-  const { data } = useSession();
+  const { data, status } = useSession();
   console.log("SESSION", data);
   const handleLogout = () => {
+    signOut();
     // logout();
-    router.push("/login");
+    // router.push("/login");
   };
   return (
     <Disclosure
@@ -90,11 +92,11 @@ export default function Header() {
                         placeholder="Search..."
                       />
                     </div> */}
-                    {loggedInUser
+                    {status == "authenticated"
                       ? authenticatedNav.map((item) => {
-                          if (item.role.indexOf(loggedInUser.role) !== -1) {
+                          if (item.role.indexOf(data.role) !== -1) {
                             return (
-                              <Link href={item.href}>
+                              <Link href={item.href} key={item.name}>
                                 <span className="font-medium cursor-pointer">
                                   {item.name}
                                 </span>
@@ -135,11 +137,11 @@ export default function Header() {
                             </a>
                           </Link>
                         ))}
-                    {loggedInUser && (
+                    {status == "authenticated" && data.user?.name && (
                       <Avatar
                         className="cursor-pointer"
                         onClick={handleLogout}
-                        name={loggedInUser.name}
+                        name={data.user?.name}
                       />
                     )}
                   </div>
