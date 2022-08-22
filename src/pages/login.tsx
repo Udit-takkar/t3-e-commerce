@@ -4,11 +4,15 @@ import { useState, forwardRef, useCallback, ReactNode } from "react";
 import { FaRegEnvelope } from "react-icons/fa";
 import { MdLockOutline } from "react-icons/md";
 import Link from "next/link";
-import { loginValidator, loginInputType } from "../utils/login-validator";
+import {
+  loginValidator,
+  loginInputType,
+} from "../utils/validators/login-validator";
 // import { AuthServices } from "../services/AuthServices";
 import { useRouter } from "next/router";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { signIn } from "next-auth/react";
 
 // import { autoLogin } from "../utils/auth";
 
@@ -22,10 +26,9 @@ export default function Signin() {
 
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const onSubmit = async (data: loginInputType) => {
-    const fields = { fields: data };
-    console.log("fields", data);
-  };
+  const onSubmit = useCallback(async (data: loginInputType) => {
+    await signIn("credentials", { ...data, callbackUrl: "/" });
+  }, []);
 
   return (
     <div className=" flex min-h-screen flex-col items-center justify-center py-16 bg-gray-100">

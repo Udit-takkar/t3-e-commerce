@@ -6,11 +6,15 @@ import { MdLockOutline } from "react-icons/md";
 import { AiOutlineUser } from "react-icons/ai";
 import { useRouter } from "next/router";
 import { useForm } from "react-hook-form";
-import { signUpValidator, signUpInputType } from "../utils/signup-validator";
+import {
+  signUpValidator,
+  signUpInputType,
+} from "../utils/validators/signup-validator";
 import { zodResolver } from "@hookform/resolvers/zod";
-
 // import { mutate } from "swr";
 // import { autoLogin } from "../utils/auth";
+// import { useAuth } from "../hooks/useAuth";
+import { trpc } from "../utils/trpc";
 
 export default function Signin() {
   const router = useRouter();
@@ -18,14 +22,23 @@ export default function Signin() {
     resolver: zodResolver(signUpValidator),
   });
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-
+  const { mutateAsync } = trpc.useMutation(["auth.signup"]);
   const { formState, handleSubmit } = form;
   const { isSubmitting } = formState;
 
-  const onSubmit = async (data: signUpInputType) => {
-    const fields = { fields: data };
-    console.log("fields", fields);
-  };
+  const onSubmit = useCallback(
+    async (data: signUpInputType) => {
+      try {
+        const result = await mutateAsync(data);
+        if (result.status === 201) {
+          router.push("/");
+        }
+      } catch (err) {
+        console.log("ROUTER", err);
+      }
+    },
+    [mutateAsync, router]
+  );
 
   return (
     <div className=" flex min-h-screen flex-col items-center justify-center py-16 bg-gray-100">
