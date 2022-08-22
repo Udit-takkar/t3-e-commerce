@@ -47,12 +47,50 @@ model Session {
 
 model User {
     id            String    @id @default(cuid())
-    name          String?
-    email         String?   @unique
-    emailVerified DateTime?
+    name          String
+    email         String    @unique
     image         String?
-    accounts      Account[]
-    sessions      Session[]
+    password      String
+    phone         String?
+    birthDate     DateTime?
+    aboutMe       String?   @db.Text
+    createdAt     DateTime? @default(now())
+    updatedAt     DateTime? @updatedAt
+    roleId        Int?
+    role          Role?     @relation(fields: [roleId], references: [id])
+    cart          Cart[]
+    emailVerified DateTime?
+
+    accounts     Account[]
+    sessions     Session[]
+    Permission   Permission? @relation(fields: [permissionId], references: [id])
+    permissionId Int?
+
+    @@map("user")
+}
+
+model Role {
+    id          Int          @id @default(autoincrement())
+    name        String       @unique
+    displayName String?
+    createdAt   DateTime?    @default(now())
+    updatedAt   DateTime?    @updatedAt
+    users       User[]
+    permissions Permission[]
+
+    @@map("role")
+}
+
+model Permission {
+    id          Int       @id @default(autoincrement())
+    name        String
+    displayName String
+    createdAt   DateTime? @default(now())
+    updatedAt   DateTime? @updatedAt
+    roles       Role[]
+    users       User[]
+
+    @@map("permission")
 }
 
 model VerificationToken {
@@ -61,4 +99,53 @@ model VerificationToken {
     expires    DateTime
 
     @@unique([identifier, token])
+}
+
+model Category {
+    id       String    @id @default(cuid())
+    name     String
+    products Product[]
+    image    String?
+
+    @@map("category")
+}
+
+model Product {
+    id               String     @id @default(cuid())
+    name             String
+    description      String
+    price            Float
+    sale_price       String
+    image            String
+    brand            String
+    categories       Category[]
+    currentInventory Int
+    createdAt        DateTime?  @default(now())
+    CartItem         CartItem[]
+
+    @@map("product")
+}
+
+model Cart {
+    id        String    @id @default(cuid())
+    userId    String
+    createdAt DateTime? @default(now())
+
+    user     User       @relation(fields: [userId], references: [id])
+    CartItem CartItem[]
+
+    @@index([userId], map: "Cart_userId_fkey")
+    @@map("cart")
+}
+
+model CartItem {
+    cart_id    String    @id
+    product_id String
+    quantity   Int
+    createdAt  DateTime? @default(now())
+
+    cart    Cart    @relation(fields: [cart_id], references: [id])
+    product Product @relation(fields: [product_id], references: [id])
+
+    @@map("cartItem")
 }
