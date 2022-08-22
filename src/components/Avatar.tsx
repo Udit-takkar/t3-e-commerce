@@ -1,7 +1,6 @@
 import React from "react";
-// import { getAvatarBg } from './lib/getAvatarBg';
 
-const getInitials = (name) => {
+const getInitials = (name: string) => {
   if (!name) {
     return undefined;
   }
@@ -36,27 +35,42 @@ const colorsList = [
   "#455A64",
 ];
 
-export const getAvatarBg = (name) => {
+export const getAvatarBg = (name: string) => {
   const initials = getInitials(name);
   const indexFactor = 20;
   const colorIndex = ((initials?.codePointAt(0) || 0) % indexFactor) + 1;
   return { initials: initials || "", color: colorsList[colorIndex - 1] };
 };
 
-function Avatar({
+enum SizeType {
+  sm = "sm",
+  md = "md",
+  lg = "lg",
+  xl = "xl",
+}
+interface AvatarProps {
+  name: string;
+  className?: string;
+  size?: SizeType;
+  customSize?: number;
+  onClick: () => void;
+}
+const sizeClass: Record<SizeType, string> = {
+  sm: "w-8 h-8 text-xs",
+  md: "w-16 h-16 text-lg",
+  lg: "w-20 h-20 text-3xl",
+  xl: "w-32 h-32 text-5xl",
+};
+
+const Avatar: React.FC<AvatarProps> = ({
   name,
   className = "",
-  size = "sm",
+  size = SizeType.sm,
   customSize = 0,
   onClick,
-}) {
+}) => {
   const { initials, color } = getAvatarBg(name);
-  const sizeClass = {
-    sm: "w-8 h-8 text-xs",
-    md: "w-16 h-16 text-lg",
-    lg: "w-20 h-20 text-3xl",
-    xl: "w-32 h-32 text-5xl",
-  };
+
   let custom = {};
   if (customSize) {
     custom = {
@@ -66,13 +80,13 @@ function Avatar({
   }
   return (
     <div
-      className={`flex justify-center items-center font-bold object-cover  text-white ${sizeClass[size]} rounded-full ${className}`}
+      className={`flex justify-center items-center font-bold object-cover  text-white ${sizeClass[size]} rounded-full ${className} ml-2`}
       style={{ backgroundColor: color, ...custom }}
       onClick={onClick}
     >
       {initials}
     </div>
   );
-}
+};
 
 export default Avatar;
