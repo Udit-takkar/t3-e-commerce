@@ -72,6 +72,7 @@ export const nextAuthOptions: NextAuthOptions = {
     session: async ({ session, token }) => {
       if (token) {
         session.id = token.id;
+        // TODO: Figure out how to fix type error here
         session.role = token.role;
       }
 
@@ -86,6 +87,7 @@ export const nextAuthOptions: NextAuthOptions = {
     signIn: "/login",
     newUser: "/signup",
   },
+  secret: process.env.NEXTAUTH_SECRET,
 };
 
 export default NextAuth(nextAuthOptions);
