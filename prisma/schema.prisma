@@ -94,7 +94,7 @@ model Product {
     name             String
     description      String
     price            Float
-    sale_price       String
+    salePrice        Float
     image            String
     brand            String
     categories       Category[]
