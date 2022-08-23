@@ -63,11 +63,11 @@ model User {
     createdAt     DateTime?          @default(now())
     updatedAt     DateTime?          @updatedAt
     role          UserPermissionRole @default(USER)
-    cart          Cart[]
     emailVerified DateTime?
 
-    accounts Account[]
-    sessions Session[]
+    accounts      Account[]
+    sessions      Session[]
+    WishListItems WishListItem[]
 
     @@map("user")
 }
@@ -90,7 +90,7 @@ model Category {
 }
 
 model Product {
-    id               String     @id @default(cuid())
+    id               String         @id @default(cuid())
     name             String
     description      String
     price            Float
@@ -99,32 +99,22 @@ model Product {
     brand            String
     categories       Category[]
     currentInventory Int
-    createdAt        DateTime?  @default(now())
-    CartItem         CartItem[]
+    createdAt        DateTime?      @default(now())
+    WishListItem     WishListItem[]
 
     @@map("product")
 }
 
-model Cart {
+model WishListItem {
     id        String    @id @default(cuid())
     userId    String
+    productId String
     createdAt DateTime? @default(now())
+    quantity  Int
 
-    user     User       @relation(fields: [userId], references: [id])
-    CartItem CartItem[]
+    user    User    @relation(fields: [userId], references: [id])
+    product Product @relation(fields: [productId], references: [id])
 
-    @@index([userId], map: "Cart_userId_fkey")
-    @@map("cart")
-}
-
-model CartItem {
-    cart_id    String    @id
-    product_id String
-    quantity   Int
-    createdAt  DateTime? @default(now())
-
-    cart    Cart    @relation(fields: [cart_id], references: [id])
-    product Product @relation(fields: [product_id], references: [id])
-
-    @@map("cartItem")
+    @@index([userId], map: "WishlistItem_userId_fkey")
+    @@map("wishlistItem")
 }
