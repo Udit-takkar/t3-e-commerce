@@ -22,6 +22,7 @@
     "@trpc/react": "^9.26.2",
     "@trpc/server": "^9.26.2",
     "argon2": "^0.28.7",
+    "auto-zustand-selectors-hook": "^2.0.0",
     "framer-motion": "^7.1.0",
     "next": "12.2.3",
     "next-auth": "^4.10.3",
@@ -33,7 +34,8 @@
     "react-lazy-load-image-component": "^1.5.5",
     "react-query": "3.39.2",
     "superjson": "^1.9.1",
-    "zod": "^3.17.3"
+    "zod": "^3.17.3",
+    "zustand": "^4.1.1"
   },
   "devDependencies": {
     "@types/node": "18.0.0",

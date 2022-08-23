@@ -1169,6 +1169,11 @@ atob@^2.1.2:
   resolved "https://registry.yarnpkg.com/atob/-/atob-2.1.2.tgz#6d9517eb9e030d2436666651e86bd9f6f13533c9"
   integrity sha512-Wm6ukoaOGJi/73p/cl2GvLjTI5JM1k/O14isD73YML8StrH/7/lRFgmg8nICZgD3bZZvjwCGxtMOD3wWNAu8cg==
 
+auto-zustand-selectors-hook@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/auto-zustand-selectors-hook/-/auto-zustand-selectors-hook-2.0.0.tgz#06a21131bc115923daf341ac20b55dc233538ed1"
+  integrity sha512-QPmI3PUgTW3np6coV+ffIP/yygYPvi8qWXezPW82u9cVLr79Tsf2TkH5/auFdhnL5iAyLOk4Sjk7XQwnmDsbSw==
+
 autoprefixer@^10.4.8:
   version "10.4.8"
   resolved "https://registry.yarnpkg.com/autoprefixer/-/autoprefixer-10.4.8.tgz#92c7a0199e1cfb2ad5d9427bd585a3d75895b9e5"
@@ -4591,3 +4596,10 @@ zod@^3.17.3:
   version "3.17.10"
   resolved "https://registry.yarnpkg.com/zod/-/zod-3.17.10.tgz#8716a05e6869df6faaa878a44ffe3c79e615defb"
   integrity sha512-IHXnQYQuOOOL/XgHhgl8YjNxBHi3xX0mVcHmqsvJgcxKkEczPshoWdxqyFwsARpf41E0v9U95WUROqsHHxt0UQ==
+
+zustand@^4.1.1:
+  version "4.1.1"
+  resolved "https://registry.yarnpkg.com/zustand/-/zustand-4.1.1.tgz#5a61cc755a002df5f041840a414ae6e9a99ee22b"
+  integrity sha512-h4F3WMqsZgvvaE0n3lThx4MM81Ls9xebjvrABNzf5+jb3/03YjNTSgZXeyrvXDArMeV9untvWXRw1tY+ntPYbA==
+  dependencies:
+    use-sync-external-store "1.2.0"
