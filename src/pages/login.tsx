@@ -13,6 +13,7 @@ import { useRouter } from "next/router";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { signIn } from "next-auth/react";
+import { Toaster } from "react-hot-toast";
 
 // import { autoLogin } from "../utils/auth";
 
@@ -27,7 +28,11 @@ export default function Signin() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const onSubmit = useCallback(async (data: loginInputType) => {
-    await signIn("credentials", { ...data, callbackUrl: "/" });
+    try {
+      await signIn("email-login", { ...data, callbackUrl: "/" });
+    } catch (err) {
+      console.log(err);
+    }
   }, []);
 
   return (
@@ -107,6 +112,7 @@ export default function Signin() {
           <div className="w-2/5 font-helvetica text-white   bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-800 shadow-lg dark:shadow-lg font-medium rounded-lg text-md text-center shadow-blue-500/50 dark:shadow-blue-800/80" />
         </div>
       </main>
+      <Toaster position="bottom-right" />
     </div>
   );
 }

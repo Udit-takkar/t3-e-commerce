@@ -21,7 +21,9 @@ const notFound = {
 export const nextAuthOptions: NextAuthOptions = {
   providers: [
     Credentials({
-      name: "credentials",
+      name: "email-login",
+      id: "email-login",
+      type: "credentials",
       credentials: {
         email: {
           label: "Email",
@@ -36,8 +38,8 @@ export const nextAuthOptions: NextAuthOptions = {
         }
         const creds = await loginValidator.parseAsync(credentials);
 
-        const user = await prisma.user.findFirst({
-          where: { email: creds.email },
+        const user = await prisma.user.findUnique({
+          where: { email: creds.email.toLowerCase() },
         });
 
         if (!user) {
@@ -73,6 +75,7 @@ export const nextAuthOptions: NextAuthOptions = {
       if (token) {
         session.id = token.id;
         // TODO: Figure out how to fix type error here
+        //@ts-ignore
         session.role = token.role;
       }
 
@@ -85,9 +88,13 @@ export const nextAuthOptions: NextAuthOptions = {
   },
   pages: {
     signIn: "/login",
-    newUser: "/signup",
+    newUser: "/",
+    error: "/auth/error",
   },
   secret: process.env.NEXTAUTH_SECRET,
+  session: {
+    strategy: "jwt",
+  },
 };
 
 export default NextAuth(nextAuthOptions);

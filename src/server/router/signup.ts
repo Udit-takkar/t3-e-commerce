@@ -13,7 +13,7 @@ export const signupRouter = createRouter().mutation("signup", {
     try {
       const { name, email, password } = input;
 
-      const exists = await ctx.prisma.user.findFirst({
+      const exists = await ctx.prisma.user.findUnique({
         where: { email },
       });
 

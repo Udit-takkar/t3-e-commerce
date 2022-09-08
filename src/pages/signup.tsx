@@ -15,15 +15,18 @@ import { zodResolver } from "@hookform/resolvers/zod";
 // import { autoLogin } from "../utils/auth";
 // import { useAuth } from "../hooks/useAuth";
 import { trpc } from "../utils/trpc";
+import { signIn } from "next-auth/react";
+import { NEXT_PUBLIC_BASE_URL } from "../utils/constants";
+import showToast from "../lib/toast";
 
-export default function Signin() {
+export default function SignUp() {
   const router = useRouter();
   const form = useForm<signUpInputType>({
     resolver: zodResolver(signUpValidator),
   });
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const { mutateAsync } = trpc.useMutation(["auth.signup"]);
-  const { formState, handleSubmit } = form;
+  const { formState, handleSubmit, reset } = form;
   const { isSubmitting } = formState;
 
   const onSubmit = useCallback(
@@ -31,7 +34,12 @@ export default function Signin() {
       try {
         const result = await mutateAsync(data);
         if (result.status === 201) {
-          router.push("/");
+          reset();
+          showToast(
+            "Your Account has been created. Login to continue",
+            "success"
+          );
+          router.push("/login");
         }
       } catch (err) {
         console.log("ROUTER", err);

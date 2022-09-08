@@ -8,6 +8,7 @@ import "../styles/globals.css";
 import { loggerLink } from "@trpc/client/links/loggerLink";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import { Toaster } from "react-hot-toast";
 
 const MyApp: AppType = ({
   Component,
@@ -18,6 +19,7 @@ const MyApp: AppType = ({
       <Navbar />
       <Component {...pageProps} />
       <Footer />
+      <Toaster position="bottom-right" />
     </SessionProvider>
   );
 };
