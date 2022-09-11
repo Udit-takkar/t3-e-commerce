@@ -1,33 +1,38 @@
 import { createSelectorHooks } from "auto-zustand-selectors-hook";
 import create from "zustand";
 import { devtools } from "zustand/middleware";
+import { inferQueryOutput } from "../../lib/trpc-react";
 
-interface Category {
-  id: string;
-  name: string;
-  image: string;
-}
-
-export interface Cart {
-  id: string;
-  name: string;
-  description: string;
-  image: string;
-  price: number;
-  salePrice: number;
-  brand: string;
-  currentInventory: number;
-  categoris: Category[];
-  createdAt: string;
-}
+export type ProductType = NonNullable<
+  inferQueryOutput<"products.trendingProducts">["result"]
+>[number] & { quantity?: number };
 
 type CartStoreType = {
-  items: Cart[];
+  items: ProductType[];
   total: number;
-  add: (item: Cart) => void;
-  populate: (items: Cart[], total: number) => void;
-  update: (productId: string, quantity: number) => void;
-  remove: (productId: string) => void;
+  totalQty: number;
+  add: ({ item }: { item: ProductType }) => void;
+  populate: (items: ProductType[], total: number) => void;
+  update: ({
+    productId,
+    productPrice,
+    productQuantity,
+    action,
+  }: {
+    productId: string;
+    productPrice: number;
+    action: "increase" | "decrease";
+    productQuantity: number;
+  }) => void;
+  remove: ({
+    productId,
+    productPrice,
+    productQuantity,
+  }: {
+    productId: string;
+    productPrice: number;
+    productQuantity: number;
+  }) => void;
 };
 
 const useCartStoreBase = create<CartStoreType>()(
@@ -35,29 +40,51 @@ const useCartStoreBase = create<CartStoreType>()(
     (set) => ({
       items: [],
       total: 0,
-      add: (item) => {
-        set((state) => ({ ...state, items: [...state.items, item] }));
+      totalQty: 0,
+      add: ({ item }) => {
+        item.quantity = 1;
+        set((state) => ({
+          ...state,
+          items: [...state.items, item],
+          totalQty: state.totalQty + 1,
+          total: state.total + (item?.salePrice ? item.salePrice : item.price),
+        }));
       },
       populate: (items, total) => {
         set((state) => ({ ...state, items, total }));
       },
-      update: (productId, quantity) => {
+      update: ({ productId, productPrice, productQuantity, action }) => {
         set((state) => ({
           ...state,
-          items: state.items.map((item: Cart) => ({
+          items: state.items.map((item: ProductType) => ({
             ...item,
-            quantity: item.id === productId ? quantity : item.currentInventory,
+            quantity:
+              item.id === productId && item.quantity
+                ? action === "increase"
+                  ? item.quantity + 1
+                  : item?.quantity - 1
+                : item.quantity,
           })),
+          totalQty:
+            action === "increase" ? state.totalQty + 1 : state.totalQty - 1,
+          total:
+            action === "increase"
+              ? state.total + productPrice
+              : state.total - productPrice,
         }));
       },
-      remove: (productId) => {
+      remove: ({ productId, productPrice, productQuantity }) => {
         set((state) => ({
           ...state,
-          items: state.items.filter((item: Cart) => item.id !== productId),
+          items: state.items.filter(
+            (item: ProductType) => item.id !== productId
+          ),
+          totalQty: state.totalQty - 1,
+          total: state.total - productPrice * productQuantity,
         }));
       },
     }),
-    { name: "CartStore" }
+    { name: "Cart" }
   )
 );
 

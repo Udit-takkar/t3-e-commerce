@@ -1,25 +1,44 @@
 import React from "react";
 import Image from "next/image";
 import MainImg from "../assets/MainImage.png";
-import ProductSection from "./Products/ProductSection";
 import { useRouter } from "next/router";
-// import useProducts from "../hooks/useProducts";
 import ProductCard from "./Products/ProductCard";
-// import useCart from "../hooks/useCart";
 import Link from "next/link";
-import { data } from "../../test";
+import type { HomePageProps } from "../pages";
+import useCart from "../store/cart/Cart";
+import getPercentageDecrease from "../utils/getPercentDecrease";
+import type { ProductType } from "../store/cart";
 
-export function getPercentageDecreased(
-  originalPrice: number,
-  basePrice: number
-) {
-  return Math.round(((originalPrice - basePrice) / originalPrice) * 100);
+interface handleCartActionstProps {
+  product: ProductType;
+  action: "increase" | "decrease";
 }
 
-const HomePage: React.FC = (props) => {
+const LandingPage = (props: HomePageProps) => {
   const router = useRouter();
-  //   const { data, setQueryVariables, isLoading } = useProducts();
-  //   const { addToCart, cart, removeFromCart } = useCart();
+  const { products } = props;
+
+  const addToCart = useCart((state) => state.add);
+  const updateCart = useCart((state) => state.update);
+  const cartItems = useCart((state) => state.items);
+  const removeFromCart = useCart((state) => state.remove);
+
+  const handleCartActions = ({ product, action }: handleCartActionstProps) => {
+    if (action === "decrease" && product?.quantity === 1) {
+      removeFromCart({
+        productId: product.id,
+        productPrice: product.salePrice ? product.salePrice : product.price,
+        productQuantity: product.quantity,
+      });
+    } else if (product.quantity) {
+      updateCart({
+        productId: product.id,
+        productPrice: product.salePrice ? product.salePrice : product.price,
+        productQuantity: product.quantity,
+        action,
+      });
+    }
+  };
 
   return (
     <div className="relative bg-transparent	pt-32 pb-16">
@@ -144,7 +163,6 @@ const HomePage: React.FC = (props) => {
         </div>
       </div>
       {/* Top Categories with products */}
-      {/* <div> */}
       <div className="lg:col-span-3 mx-12">
         <div className="flex justify-between items-center mx-4">
           <h1 className="font-bold  text-2xl mt-16 mb-8">Trending Products</h1>
@@ -153,32 +171,27 @@ const HomePage: React.FC = (props) => {
           </Link>
         </div>
         <div className="grid mt-3 grid-cols-products gap-8">
-          {data?.products?.slice(4, 12).map((product) => {
-            // const onlyAboveProduct = cart.filter(
-            //   (item) => item._id === product._id
-            // )[0];
-            const onlyAboveProduct = false;
+          {products?.map((product) => {
+            const onlyAboveProduct = cartItems.filter(
+              (item) => item.id === product.id
+            )[0];
             const isInCart = !!onlyAboveProduct;
 
-            const percentage = getPercentageDecreased(
+            const percentage = getPercentageDecrease(
               product.price,
-              product.sale_price
+              product.salePrice
             );
 
-            const isDiscount = product.price !== product.sale_price;
+            const isDiscount = product.price !== product.salePrice;
 
-            const handleAddToCart = () => {
-              //   addToCart(product);
-            };
             return (
               <ProductCard
                 product={product}
                 key={product.name}
-                category_id={product.category.id}
-                handleAddToCart={handleAddToCart}
+                handleCartActions={handleCartActions}
+                addToCart={addToCart}
                 isInCart={isInCart}
                 onlyAboveProduct={onlyAboveProduct}
-                removeFromCart={() => {}}
                 percentage={percentage}
                 isDiscount={isDiscount}
               />
@@ -186,12 +199,8 @@ const HomePage: React.FC = (props) => {
           })}
         </div>
       </div>
-
-      {/* {data.top_products.map(product => (
-        <ProductSection key={product.category_name} {...product} />
-      ))} */}
     </div>
   );
 };
 
-export default HomePage;
+export default LandingPage;
