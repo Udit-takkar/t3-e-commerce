@@ -21,7 +21,6 @@ model Example {
 enum UserPermissionRole {
     USER
     ADMIN
-    SELLER
 }
 
 // Necessary for Next auth
@@ -81,28 +80,38 @@ model VerificationToken {
 }
 
 model Category {
-    id       String    @id @default(cuid())
+    id       String                 @id @default(cuid())
     name     String
-    products Product[]
+    products CategoriesOnProducts[]
     image    String?
 
     @@map("category")
 }
 
 model Product {
-    id               String         @id @default(cuid())
+    id               String                 @id @default(cuid())
     name             String
     description      String
     price            Float
     salePrice        Float
     image            String
     brand            String
-    categories       Category[]
+    categories       CategoriesOnProducts[]
     currentInventory Int
-    createdAt        DateTime?      @default(now())
+    createdAt        DateTime?              @default(now())
     WishListItem     WishListItem[]
 
     @@map("product")
+}
+
+model CategoriesOnProducts {
+    product    Product   @relation(fields: [productId], references: [id])
+    productId  String
+    category   Category  @relation(fields: [categoryId], references: [id])
+    categoryId String
+    createdAt  DateTime? @default(now())
+
+    @@id([productId, categoryId])
 }
 
 model WishListItem {
