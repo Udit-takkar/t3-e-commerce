@@ -1,9 +1,6 @@
 import * as trpc from "@trpc/server";
 import { hash } from "argon2";
-import {
-  signUpValidator,
-  signUpInputType,
-} from "../../utils/validators/signup-validator";
+import { signUpValidator } from "../../utils/validators/signup-validator";
 import { Context } from "./context";
 import { createRouter } from "./context";
 
@@ -36,7 +33,6 @@ export const signupRouter = createRouter().mutation("signup", {
         result: result.email,
       };
     } catch (err) {
-      console.log("WTF", err);
       return {
         status: 500,
         message: "Something went wrong",

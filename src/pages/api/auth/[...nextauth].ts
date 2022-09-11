@@ -1,22 +1,19 @@
 import NextAuth, { type NextAuthOptions } from "next-auth";
-// import DiscordProvider from "next-auth/providers/discord";
 import CredentialsProvider from "next-auth/providers/credentials";
 
-// Prisma adapter for NextAuth, optional and can be removed
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { prisma } from "../../../server/db/client";
 import { env } from "../../../env/server.mjs";
 import { loginValidator } from "../../../utils/validators/login-validator";
 import Credentials from "next-auth/providers/credentials";
 import { verify } from "argon2";
-// import { prisma } from "./prisma";
 
-const notFound = {
-  id: 2,
-  email: null,
-  name: null,
-  role: null,
-};
+// const notFound = {
+//   id: 2,
+//   email: null,
+//   name: null,
+//   role: null,
+// };
 
 export const nextAuthOptions: NextAuthOptions = {
   providers: [
@@ -83,7 +80,7 @@ export const nextAuthOptions: NextAuthOptions = {
     },
   },
   jwt: {
-    secret: "super-secret",
+    secret: process.env.NEXTAUTH_SECRET,
     maxAge: 15 * 24 * 30 * 60, // 15 days
   },
   pages: {
