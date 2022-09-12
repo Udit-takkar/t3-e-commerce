@@ -4,11 +4,24 @@ import Link from "next/link";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import "react-lazy-load-image-component/src/effects/blur.css";
 import { MinusSmIcon, PlusSmIcon } from "@heroicons/react/solid";
+import type { ProductType } from "../../store/cart";
+import { handleCartActionstProps } from "../LandingPage";
+import type { CartStoreType } from "../../store/cart";
 
 function Placeholder() {
   return (
     <div className="w-full h-[90px] max-w-[90px] rounded-lg  animate-pulse" />
   );
+}
+
+interface ProductCardProps {
+  product: ProductType;
+  handleCartActions: ({ product, action }: handleCartActionstProps) => void;
+  isInCart: boolean;
+  onlyAboveProduct: ProductType | undefined;
+  percentage: number | null;
+  isDiscount: boolean;
+  addToCart: CartStoreType["add"];
 }
 
 const ProductCard = ({
@@ -19,7 +32,7 @@ const ProductCard = ({
   percentage,
   isDiscount,
   addToCart,
-}: any) => {
+}: ProductCardProps) => {
   return (
     <div className="w-full items-center">
       <Link key={product.id} href={`/products/${product.id}`}>
@@ -62,18 +75,18 @@ const ProductCard = ({
             )}
           </div>
 
-          {isInCart ? (
+          {isInCart && onlyAboveProduct?.quantity ? (
             <ButtonCounter
               count={onlyAboveProduct.quantity}
               increaseProductInCart={() => {
                 handleCartActions({
-                  product,
+                  product: onlyAboveProduct,
                   action: "increase",
                 });
               }}
               decreaseProductInCart={() => {
                 handleCartActions({
-                  product,
+                  product: onlyAboveProduct,
                   action: "decrease",
                 });
               }}

@@ -1,20 +1,17 @@
-import type { NextPage } from "next";
 import Head from "next/head";
-import { trpc } from "../utils/trpc";
 import LandingPage from "../components/LandingPage";
 import { GetStaticPropsContext, InferGetStaticPropsType } from "next";
 import { createSSGHelpers } from "@trpc/react/ssg";
 import superjson from "superjson";
+import { useHasMounted } from "../hooks/usHasMounted";
 import { appRouter } from "../server/router";
 
-type TechnologyCardProps = {
-  name: string;
-  description: string;
-  documentation: string;
-};
 export type HomePageProps = InferGetStaticPropsType<typeof getStaticProps>;
 
 const Home = (props: HomePageProps) => {
+  const hasMounted = useHasMounted();
+  if (!hasMounted) return "Loading...";
+
   return (
     <>
       <Head>

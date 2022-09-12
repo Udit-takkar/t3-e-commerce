@@ -9,7 +9,7 @@ import useCart from "../store/cart/Cart";
 import getPercentageDecrease from "../utils/getPercentDecrease";
 import type { ProductType } from "../store/cart";
 
-interface handleCartActionstProps {
+export interface handleCartActionstProps {
   product: ProductType;
   action: "increase" | "decrease";
 }
@@ -30,7 +30,7 @@ const LandingPage = (props: HomePageProps) => {
         productPrice: product.salePrice ? product.salePrice : product.price,
         productQuantity: product.quantity,
       });
-    } else if (product.quantity) {
+    } else if (product?.quantity) {
       updateCart({
         productId: product.id,
         productPrice: product.salePrice ? product.salePrice : product.price,
@@ -176,13 +176,14 @@ const LandingPage = (props: HomePageProps) => {
               (item) => item.id === product.id
             )[0];
             const isInCart = !!onlyAboveProduct;
-
             const percentage = getPercentageDecrease(
               product.price,
               product.salePrice
             );
 
-            const isDiscount = product.price !== product.salePrice;
+            const isDiscount: boolean = product.salePrice
+              ? product.price !== product.salePrice
+              : false;
 
             return (
               <ProductCard
