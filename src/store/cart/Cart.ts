@@ -1,13 +1,20 @@
 import { createSelectorHooks } from "auto-zustand-selectors-hook";
-import create from "zustand";
+import create, { GetState, SetState, StateCreator, StoreApi } from "zustand";
 import { devtools } from "zustand/middleware";
-import { inferQueryOutput } from "../../lib/trpc-react";
+import { inferQueryOutput } from "../../utils/trpc";
+import { persist } from "zustand/middleware";
 
 export type ProductType = NonNullable<
   inferQueryOutput<"products.trendingProducts">["result"]
 >[number] & { quantity?: number };
 
-type CartStoreType = {
+const dummyStorageApi = {
+  getItem: (name: string) => null,
+  setItem: (name: string) => {},
+  removeItem: (name: string) => {},
+};
+
+export type CartStoreType = {
   items: ProductType[];
   total: number;
   totalQty: number;
@@ -36,8 +43,8 @@ type CartStoreType = {
 };
 
 const useCartStoreBase = create<CartStoreType>()(
-  devtools(
-    (set) => ({
+  persist(
+    devtools((set) => ({
       items: [],
       total: 0,
       totalQty: 0,
@@ -83,8 +90,12 @@ const useCartStoreBase = create<CartStoreType>()(
           total: state.total - productPrice * productQuantity,
         }));
       },
-    }),
-    { name: "Cart" }
+    })),
+    {
+      name: "cart-storage",
+      getStorage: () =>
+        typeof window !== "undefined" ? window.localStorage : dummyStorageApi,
+    }
   )
 );
 

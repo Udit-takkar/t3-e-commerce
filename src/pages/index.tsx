@@ -5,6 +5,7 @@ import { createSSGHelpers } from "@trpc/react/ssg";
 import superjson from "superjson";
 import { useHasMounted } from "../hooks/usHasMounted";
 import { appRouter } from "../server/router";
+import { prisma } from "../server/db/client";
 
 export type HomePageProps = InferGetStaticPropsType<typeof getStaticProps>;
 
@@ -32,7 +33,9 @@ export async function getStaticProps(context: GetStaticPropsContext) {
   try {
     const ssg = await createSSGHelpers({
       router: appRouter,
-      ctx: {},
+      ctx: {
+        prisma: prisma,
+      },
       transformer: superjson, // optional - adds superjson serialization
     });
 
